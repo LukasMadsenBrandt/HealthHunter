@@ -2,6 +2,7 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 import time
+import requests
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,78 +13,27 @@ password = 'lydigtxjnucdxoda'
 email_sender = 'auto.python.alerter@gmail.com'
 email_receiver = 'lukas.madsen.brandt@gmail.com'
 
-url = "https://www.tilbudsugen.dk/tilbud/æg"
+url = "https://etilbudsavis.dk/soeg/%C3%A6g?price_range.per_unit=piece&price_range.max=40&business_ids=bdf5A%2C0b1e8%2C71c90%2CDWZE1w%2Cc1edq%2Cd311fg%2C11deC%2C9ba51%2C93f13%2C88ddE%2C603dfL%2Cdi314B"
 
-# Configure the Selenium webdriver (make sure you have the appropriate driver executable installed)
-driver = webdriver.Chrome()
+response = requests.get(url)
+soup = BS(response.content, "html.parser")
 
-# Open the URL in the webdriver
-driver.get(url)
+print(soup)
+#cleanup = BS.find_all('//*[@id="main"]/div/div/div/div[2]/div/ul')
 
-# Wait until the product elements are located and become visible
-wait = WebDriverWait(driver, 30)
-
-# Find the buttons element
-button = driver.find_element(By.XPATH, '//*[@id="didomi-notice-disagree-button"]')
-# Click the button
-button.click()
-#Click the filter button after finding it
-filterbutton = wait.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="outer-offer-container"]/div[2]/a')))
-filterbutton.click()
-
-# Wait until finding element in panels
-panels = wait.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="mm-1"]')))
-
-# Click the kæder button
-kæder = driver.find_element(By.XPATH, '//*[@id="mm-1"]/ul[5]/li/a[2]')
-kæder.click()
-
-# Click the dagligvarer button
-dagligvarer = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-5"]/ul/li[1]/a[2]')))
-dagligvarer.click()
-
-# Click all the places we want to buy eggs from
-bilka = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[1]/label')))
-bilka.click()
-
-coop = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[2]/label')))
-coop.click()
-
-dagli = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[3]/label')))
-dagli.click()
-
-føtex = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[4]/label')))
-føtex.click()
-
-irma = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[5]/label')))
-irma.click()
-
-kvivkly = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[6]/label')))
-kvivkly.click()
-
-lidl = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[8]/label')))
-lidl.click()
-
-meny = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[10]/label')))
-meny.click()
-
-netto = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[12]/label')))
-netto.click()
-
-rema = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[13]/label')))
-rema.click()
-
-superbrugsen = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="mm-6"]/ul/li[15]/label')))
-superbrugsen.click()
-
-exitpanel = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="filters_mobile"]/div[1]/div/a[3]')))
-exitpanel.click()
-
-wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="outer-offer-container"]/div[3]/div[1]/a')))
-time.sleep(2)
+'''
 # Find the product elements again after applying the filter
-product_elements = wait.until(EC.visibility_of_all_elements_located((By.XPATH, '//*[@id="outer-offer-container"]/div[3]/div[1]/a')))
+product_elements = 
 listOfEggsOnSale = []
+keywords = ["økologiske æg", "skrabeæg", "frilandsæg"]
+
+for element in product_elements:
+    
+    product_name = element.text
+    if product_name in keywords:
+        
+'''
+'''
 # Iterate over each product element and extract the information
 for product_element in product_elements:
     
@@ -114,9 +64,6 @@ for product_element in product_elements:
             #print(f"Price: {price} kr")
             #print("-------------------------")
             listOfEggsOnSale.append(product_name)
-            
-            
-
 
 # Close the webdriver
 driver.quit()
@@ -142,3 +89,4 @@ context = ssl.create_default_context()
 with smtplib.SMTP_SSL('smtp.gmail.com',465, context=context) as smtp:
     smtp.login(email_sender, password)
     smtp.sendmail(email_sender, email_receiver, em.as_string())
+'''
