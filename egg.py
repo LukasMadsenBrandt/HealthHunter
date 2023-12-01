@@ -24,76 +24,58 @@ def matchOnEgg(input: str):
         return True
     else:
         return False
-
-header = soup.find_all('header', string=lambda text: text is not None and matchOnEgg(text))
-
-# find the li elements in the header
-for head in header:
-    div = head.findParent('div')
-    li = div.findParent('li')
     
-    print(div.text)
-    print(li.link['href'])
+days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
+def findDate(spans): 
+    ret = ""
+    # i only want the last 4 spans
+    spans = spans[-4:]
+    if spans[0].text in days:
+        ret += spans[0].text + " til " + spans[3].text
+    else:
+        ret = "I dag til " + spans[3].text
+    return ret
+
+
+headers = soup.find_all('header', string=lambda text: text is not None and matchOnEgg(text))
+items = []
+# Find the 'li' elements for each header and extract the details
+for head in headers:
+    li = head.findParent('li')
+    if li:
+        name = head.get_text(strip=True)
+        link = li.find('a', href=True)['href'] if li.find('a', href=True) else "No link found"
+
+        # Extract price per egg
+        spans = li.find_all('span')
+        price_per_egg = spans[1].get_text(strip=True) if spans else "No price"
+
+        timeframe = findDate(spans)
+        # Store the item details in a dictionary
+        item = {"name": name, "price_per_egg": price_per_egg.replace('•',''), "link": link, "timeframe": timeframe}
+        items.append(item)
+
+# Find the cheapest item based on price per egg
+cheapest_item = min(items, key=lambda x: float(x['price_per_egg'].split()[0].replace(',', '.')), default=None)
+
+for item in items:
+    print(item)
     print("_______________")
 
+print(f"Cheapest item: {cheapest_item}")
 
-'''
-# Find the product elements again after applying the filter
-product_elements = 
-listOfEggsOnSale = []
-keywords = ["økologiske æg", "skrabeæg", "frilandsæg"]
 
-for element in product_elements:
-    
-    product_name = element.text
-    if product_name in keywords:
-        
-'''
-'''
-# Iterate over each product element and extract the information
-for product_element in product_elements:
-    
-    # Check if the product element contains the desired certificate div and img tags
-    certificate_div = product_element.find_elements(By.XPATH, './/div[contains(@class, "certificates-imgs")]//img[@alt="Økologisk"]')
-    if certificate_div:
-        
-        # Extract the product name
-        product_name = product_element.text
-
-        # Find the corresponding price element for the product
-        price_element = product_element.find_element(By.XPATH, './/div[@class="product_price_pcs"]/div[@class="price"]')
-
-        # Extract the price text
-        price_text = price_element.text
-
-        # Remove any non-digit characters from the price text
-        price_text = ''.join(filter(str.isdigit, price_text))
-
-        # Convert the price to a float
-        price_text = price_text.replace(",",".")
-        price = float(price_text) /100
-
-        # Check if the price per egg is below 2.5 kr
-        if price < 2.5:
-            # Print the product, price, and price per egg
-            #print(f"Product: {product_name}")
-            #print(f"Price: {price} kr")
-            #print("-------------------------")
-            listOfEggsOnSale.append(product_name)
-
-# Close the webdriver
-driver.quit()
-subject = f"Økologiske æg på tilbud!"
-body = "Her er ugens tilbud på økologiske æg: \n \n"
-for i in range (len(listOfEggsOnSale)):
-    body += listOfEggsOnSale[i] + "\n\n"
+subject = f"Æg på tilbud!"
+body = "Her er ugens tilbud på æg: \n \n"
+for item in items:
+    body += str(item) + "\n\n"
 
 body += f"Data trukket fra \"{url}\""
 print(subject)
 print(body)
 print(f"Mail sent to \"{email_receiver}\"")
 
-
+'''
 em = EmailMessage()
 em['From'] = email_sender
 em['to'] = email_receiver
@@ -105,4 +87,6 @@ context = ssl.create_default_context()
 with smtplib.SMTP_SSL('smtp.gmail.com',465, context=context) as smtp:
     smtp.login(email_sender, password)
     smtp.sendmail(email_sender, email_receiver, em.as_string())
-'''
+
+
+print("SENT")'''
