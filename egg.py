@@ -44,24 +44,19 @@ for head in headers:
     li = head.findParent('li')
     if li:
         name = head.get_text(strip=True)
-        link = li.find('a', href=True)['href'] if li.find('a', href=True) else "No link found"
-
+        link = li.find('link', href=True)['href'] if li.find('link', href=True) else "No link found"
+        
         # Extract price per egg
         spans = li.find_all('span')
         price_per_egg = spans[1].get_text(strip=True) if spans else "No price"
 
         timeframe = findDate(spans)
         # Store the item details in a dictionary
-        item = {"name": name, "price_per_egg": price_per_egg.replace('•',''), "link": link, "timeframe": timeframe}
+        item = {"name": name, "price_per_egg": price_per_egg.replace('•',''), "timeframe": timeframe, "link": link}
         items.append(item)
 
 # Find the cheapest item based on price per egg
 cheapest_item = min(items, key=lambda x: float(x['price_per_egg'].split()[0].replace(',', '.')), default=None)
-
-for item in items:
-    print(item)
-    print("_______________")
-
 print(f"Cheapest item: {cheapest_item}")
 
 
@@ -73,7 +68,7 @@ for item in items:
     body += "\n \n"
 
 body += f"Data trukket fra \"{url}\""
-#print(subject)
+print(subject)
 print(body)
 print(f"Mail sent to \"{email_receiver}\"")
 
