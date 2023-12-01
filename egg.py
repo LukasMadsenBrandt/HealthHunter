@@ -29,8 +29,13 @@ header = soup.find_all('header', string=lambda text: text is not None and matchO
 
 # find the li elements in the header
 for head in header:
-    print(head.findParent('div'))
-#cleanup = BS.find_all('//*[@id="main"]/div/div/div/div[2]/div/ul')
+    div = head.findParent('div')
+    li = div.findParent('li')
+    
+    print(div.text)
+    print(li.link['href'])
+    print("_______________")
+
 
 '''
 # Find the product elements again after applying the filter
