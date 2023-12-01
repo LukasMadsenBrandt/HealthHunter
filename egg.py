@@ -68,10 +68,12 @@ print(f"Cheapest item: {cheapest_item}")
 subject = f"Æg på tilbud!"
 body = "Her er ugens tilbud på æg: \n \n"
 for item in items:
-    body += str(item) + "\n\n"
+    # print the keys with the value in a new line
+    body += "\n".join(f"{key}: {value}" for key, value in item.items())
+    body += "\n \n"
 
 body += f"Data trukket fra \"{url}\""
-print(subject)
+#print(subject)
 print(body)
 print(f"Mail sent to \"{email_receiver}\"")
 
