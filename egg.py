@@ -18,7 +18,18 @@ url = "https://etilbudsavis.dk/soeg/%C3%A6g?price_range.per_unit=piece&price_ran
 response = requests.get(url)
 soup = BS(response.content, "html.parser")
 
-print(soup)
+def matchOnEgg(input: str):
+    input = input.lower()
+    if "æg" in input:
+        return True
+    else:
+        return False
+
+header = soup.find_all('header', string=lambda text: text is not None and matchOnEgg(text))
+
+# find the li elements in the header
+for head in header:
+    print(head.findParent('div'))
 #cleanup = BS.find_all('//*[@id="main"]/div/div/div/div[2]/div/ul')
 
 '''
