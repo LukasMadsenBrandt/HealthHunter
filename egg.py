@@ -1,6 +1,6 @@
 import urllib.parse
 import re
-from dtos import Item
+from dtos import Item, User
 import databaseAccess as db
 import smtplib
 from email.message import EmailMessage
