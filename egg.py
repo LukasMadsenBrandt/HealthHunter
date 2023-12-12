@@ -14,13 +14,13 @@ email_receivers = ['lukas.madsen.brandt@gmail.com','krelledegn@gmail.com','lukas
 port = 587
 
 baseUrl= "https://etilbudsavis.dk"
-query = "?price_range.per_unit=piece&price_range.max=40&business_ids=bdf5A%2C0b1e8%2C71c90%2CDWZE1w%2Cc1edq%2Cd311fg%2C11deC%2C9ba51%2C93f13%2C88ddE%2C603dfL%2Cdi314B"
+filter = "?business_ids=bdf5A%2Ca5aaT%2Chg_y5Q%2C71c90%2C0b1e8%2CDWZE1w%2C9ba51%2C11deC%2Cd311fg%2Cc1edq%2C267e1m%2CdcbaNL%2C603dfL%2Cdi314B%2C88ddE%2C93f13"
 
 def getUrl(input: str):
     searchWord = urllib.parse.quote(input)
-    return baseUrl + "/soeg/" + searchWord + query
+    return baseUrl + "/soeg/" + searchWord + filter
 
-searchWords = [("skyr", "pr. liter"), ("æg", "pr. styk"), ("mælk", "pr. liter"), ("ærter", "pr. kg")]
+searchWords = [("skyr", "pr. liter"), ("æg", "pr. styk"), ("mælk", "pr. liter"), ("ærter", "pr. kg"), ("kylling", "pr. kg"), ("omega-3", "pr. styk"), ("whey", "pr. kg")]
 
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
 
@@ -116,7 +116,7 @@ for email_receiver in email_receivers:
         with smtplib.SMTP('smtp.gmail.com', port, timeout=20) as smtp:
             smtp.starttls()
             smtp.login(email_sender, password)
-            smtp.sendmail(email_sender, email_receivers, em.as_string())
+            smtp.sendmail(email_sender, email_receiver, em.as_string())
             print("Email sent successfully")
     except Exception as e:
         print("Error:", e)
