@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup as BS
 # Email configuration
 password = 'zbzifkbdbcugjddo'
 email_sender = 'HealthHunterAuto@gmail.com'
-email_receivers = ['lukas.madsen.brandt@gmail.com','krelledegn@gmail.com','lukas.second.brandt@gmail.com']
+email_receivers = ['kristian6710@gmail.com','lukas.second.brandt@gmail.com']
 port = 587 # TLS port
 
 baseUrl= "https://etilbudsavis.dk"
