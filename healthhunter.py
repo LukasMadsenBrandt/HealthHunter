@@ -76,6 +76,7 @@ for searchWord, measurement in searchWords:
             items[searchWord]["items"].append(item)
     print(f"Finished scraping {searchWord} \n({i}/{len(searchWords)}) \n\n")
     i += 1
+print("Finished scraping")
 
 def findCheapestItem(topWord: str):
     min = 10000000
@@ -93,8 +94,11 @@ for searchWord, _ in searchWords:
     cheapestItem = findCheapestItem(searchWord)
     if cheapestItem:
         cheapestItems.append(cheapestItem)
+
         
 # Send the email to all receivers
+print("Sending emails...")
+emailErrors = []
 for email_receiver in email_receivers:
     subject = "Her er de billigste varer på din Watchlist"
     body = ""
@@ -120,3 +124,9 @@ for email_receiver in email_receivers:
             print(f"Email sent to {email_receiver}")
     except Exception as e:
         print("Error: ", e)
+        emailErrors.append(email_receiver)
+
+print("Finished sending emails")
+if len(emailErrors) > 0:
+    print("Failed to send emails to: ", emailErrors)
+        
