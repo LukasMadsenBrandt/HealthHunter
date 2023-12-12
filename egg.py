@@ -9,12 +9,12 @@ password = 'lydigtxjnucdxoda'
 email_sender = 'auto.python.alerter@gmail.com'
 email_receiver = 'lukas.madsen.brandt@gmail.com'
 
-baseUrl= "https://etilbudsavis.dk/soeg/"
+baseUrl= "https://etilbudsavis.dk"
 query = "?price_range.per_unit=piece&price_range.max=40&business_ids=bdf5A%2C0b1e8%2C71c90%2CDWZE1w%2Cc1edq%2Cd311fg%2C11deC%2C9ba51%2C93f13%2C88ddE%2C603dfL%2Cdi314B"
 
 def getUrl(input: str):
     searchWord = urllib.parse.quote(input)
-    return baseUrl + searchWord + query
+    return baseUrl + "/soeg/" + searchWord + query
 
 searchWords = ["skyr", "æg", "mælk"]
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
@@ -67,7 +67,7 @@ for searchWord in searchWords:
             timeframe = findDate(spans)
 
             # Store the item
-            item = Item(searchWord, name, sanitizedPrice, link, timeframe)
+            item = Item(searchWord, name, sanitizedPrice, baseUrl + link, timeframe)
             #print(item)
 
             items[searchWord]["items"].append(item)
