@@ -1,15 +1,9 @@
+import urllib.parse
+import re
 from dataclasses import dataclass
-from email.message import EmailMessage
-import ssl
-import smtplib
-import time
+
 import requests
 from bs4 import BeautifulSoup as BS
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import urllib.parse
 
 password = 'lydigtxjnucdxoda'
 email_sender = 'auto.python.alerter@gmail.com'
@@ -24,6 +18,7 @@ def getUrl(input: str):
 
 searchWords = ["skyr", "æg", "mælk"]
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
+
 def findDate(spans):
     ret = ""
     # i only want the last 4 spans
@@ -45,40 +40,53 @@ def matchOn(text: str, match: str):
 class Item:
     topName: str
     name: str
-    price: str
+    price_per_unit: float
     link: str
     timeframe: str
 
-
+floatPattern = r"\d+,?\d*"
 items = {}
-cheapestItems = []
-for word in searchWords:
-    items[word] = {"topName": word, "items": []}
-    response = requests.get(getUrl(word))
+for searchWord in searchWords:
+    items[searchWord] = {"topName": searchWord, "items": []}
+    response = requests.get(getUrl(searchWord))
     soup = BS(response.content, "html.parser")
 
-    headers = soup.find_all('header', string=lambda text: text is not None and matchOn(text, word))
+    headers = soup.find_all('header', string=lambda text: text is not None and matchOn(text, searchWord))
 
     for head in headers:
         li = head.findParent('li')
+
         if li:
             name = head.get_text(strip=True)
             link = li.find('a', href=True)['href'] if li.find('a', href=True) else "No link found"
 
-            # Extract price per egg
+            # Extract price per word
             spans = li.find_all('span')
-            price_per_unit = (spans[1].get_text(strip=True) if spans else "No price").replace(',', '.')
-
+            price_per_unit = (spans[1].get_text(strip=True) if spans else "No price").replace('•','')
+            sanitizedPrice = float(re.search(floatPattern, price_per_unit).group().replace(',', '.'))
             timeframe = findDate(spans)
 
             # Store the item
-            item = Item(word, name, price_per_unit, link, timeframe)
+            item = Item(searchWord, name, sanitizedPrice, link, timeframe)
+            #print(item)
 
-            items[word]["items"].append(item)
-            # Cheapest Item
-            cheapestItem = min(items[word]["items"], key=lambda x: float(x.price.split()[0].replace(',', '.')), default=None)
-            cheapestItems.append(cheapestItem)
+            items[searchWord]["items"].append(item)
   
+def findCheapestItem(topWord: str):
+    min = 10000000
+    cheapestItem = None
+    for item in items[topWord]["items"]:
+        if min > item.price_per_unit:
+            min = item.price_per_unit
+            cheapestItem = item
+
+    return cheapestItem
+
+cheapestItems = []
+for searchWord in searchWords:
+    cheapestItem = findCheapestItem(searchWord)
+    if cheapestItem:
+        cheapestItems.append(cheapestItem)
 
 for cheapestItem in cheapestItems:
     print(cheapestItem)
