@@ -22,7 +22,7 @@ def getUrl(input: str):
     return baseUrl + "/soeg/" + searchWord + filter
 
 # Items in the watchlist
-searchWords = [("skyr", "pr. liter"), ("æg", "pr. styk"), ("mælk", "pr. liter"), ("ærter", "pr. kg"), ("kylling", "pr. kg"), ("omega-3", "pr. styk"), ("whey", "pr. kg")]
+searchWords = [("skyr", "pr. liter"), ("æg", "pr. styk"), ("mælk", "pr. liter"), ("ærter", "pr. kg"), ("kylling", "pr. kg"), ("omega-3", "pr. styk"), ("whey", "pr. kg"), ("energidrik", "pr. liter")]
 
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
 
