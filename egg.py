@@ -17,7 +17,8 @@ def getUrl(input: str):
     searchWord = urllib.parse.quote(input)
     return baseUrl + "/soeg/" + searchWord + query
 
-searchWords = ["skyr", "æg", "mælk", "ærter"]
+searchWords = [("skyr", "pr. liter"), ("æg", "pr. styk"), ("mælk", "pr. liter"), ("ærter", "pr. kg")]
+
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
 
 def findDate(spans):
@@ -40,7 +41,7 @@ def matchOn(text: str, match: str):
 
 floatPattern = r"\d+,?\d*"
 items = {}
-for searchWord in searchWords:
+for searchWord, measurement in searchWords:
     items[searchWord] = {"topName": searchWord, "items": []}
     response = requests.get(getUrl(searchWord))
     print(getUrl(searchWord))
@@ -62,7 +63,7 @@ for searchWord in searchWords:
             timeframe = findDate(spans)
 
             # Store the item
-            item = Item(searchWord, name, sanitizedPrice, baseUrl + link, timeframe)
+            item = Item(searchWord, name, sanitizedPrice, baseUrl + link, timeframe, measurement)
             # db.insertItem(item) # Uncomment to insert into database
 
             items[searchWord]["items"].append(item)
@@ -78,7 +79,7 @@ def findCheapestItem(topWord: str):
     return cheapestItem
 
 cheapestItems = []
-for searchWord in searchWords:
+for searchWord, _ in searchWords:
     cheapestItem = findCheapestItem(searchWord)
     if cheapestItem:
         cheapestItems.append(cheapestItem)
