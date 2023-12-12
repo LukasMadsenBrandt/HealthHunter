@@ -5,8 +5,6 @@ from dtos import Item, User
 
 # Only run when called from main
 if __name__ == "__main__":
-    print("")
-
     # Connect to the database, with password and username
     conn = sqlite3.connect('example.db')
     c = conn.cursor()
