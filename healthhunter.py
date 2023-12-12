@@ -76,7 +76,7 @@ for searchWord, measurement in searchWords:
             items[searchWord]["items"].append(item)
     print(f"Finished scraping {searchWord} \n({i}/{len(searchWords)}) \n\n")
     i += 1
-print("Finished scraping")
+print("Done Scraping")
 
 def findCheapestItem(topWord: str):
     min = 10000000
