@@ -10,8 +10,8 @@ from bs4 import BeautifulSoup as BS
 
 # Email configuration
 password = 'zbzifkbdbcugjddo'
-email_sender = 'HealthHunterAuto@gmail.com'
-email_receivers = ['kristian6710@gmail.com','lukas.second.brandt@gmail.com']
+emailSender = 'HealthHunterAuto@gmail.com'
+emailReceivers = ['kristian6710@gmail.com', 'lukas.second.brandt@gmail.com']
 port = 587 # TLS port
 
 baseUrl= "https://etilbudsavis.dk"
@@ -65,8 +65,8 @@ for searchWord, measurement in searchWords:
 
             # Extract price per word
             spans = li.find_all('span')
-            price_per_unit = (spans[1].get_text(strip=True) if spans else "No price").replace('•','')
-            sanitizedPrice = float(re.search(floatPattern, price_per_unit).group().replace(',', '.'))
+            pricePerUnit = (spans[1].get_text(strip=True) if spans else "No price").replace('•', '')
+            sanitizedPrice = float(re.search(floatPattern, pricePerUnit).group().replace(',', '.'))
             timeframe = findDate(spans)
 
             # Store the item
@@ -82,8 +82,8 @@ def findCheapestItem(topWord: str):
     min = 10000000
     cheapestItem = None
     for item in items[topWord]["items"]:
-        if min > item.price_per_unit:
-            min = item.price_per_unit
+        if min > item.pricePerUnit:
+            min = item.pricePerUnit
             cheapestItem = item
 
     return cheapestItem
@@ -99,7 +99,7 @@ for searchWord, _ in searchWords:
 # Send the email to all receivers
 print("Sending emails...")
 emailErrors = []
-for email_receiver in email_receivers:
+for emailReceiver in emailReceivers:
     subject = "Her er de billigste varer på din Watchlist"
     body = ""
     # Add all the cheapest items to the body
@@ -109,8 +109,8 @@ for email_receiver in email_receivers:
 
     # Create the email object
     em = EmailMessage()
-    em['From'] = email_sender
-    em['to'] = email_receiver
+    em['From'] = emailSender
+    em['to'] = emailReceiver
     em['subject'] = subject
     em.set_content(body)
 
@@ -119,12 +119,12 @@ for email_receiver in email_receivers:
     try:
         with smtplib.SMTP('smtp.gmail.com', port, timeout=20) as smtp:
             smtp.starttls()
-            smtp.login(email_sender, password)
-            smtp.sendmail(email_sender, email_receiver, em.as_string())
-            print(f"Email sent to {email_receiver}")
+            smtp.login(emailSender, password)
+            smtp.sendmail(emailSender, emailReceiver, em.as_string())
+            print(f"Email sent to {emailReceiver}")
     except Exception as e:
         print("Error: ", e)
-        emailErrors.append(email_receiver)
+        emailErrors.append(emailReceiver)
 
 print("Finished sending emails")
 if len(emailErrors) > 0:

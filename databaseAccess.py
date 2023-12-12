@@ -24,7 +24,7 @@ if __name__ == "__main__":
         # insert the item into the database
         c.execute(
             "INSERT INTO items VALUES (?,?,?,?,?)",
-            (item.topName, item.name, item.price_per_unit, item.link, item.timeframe)
+            (item.topName, item.name, item.pricePerUnit, item.link, item.timeframe)
         )
 
         # commit the changes
