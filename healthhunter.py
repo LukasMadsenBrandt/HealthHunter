@@ -46,6 +46,8 @@ def matchOn(text: str, match: str):
 
 floatPattern = r"\d+,?\d*"
 items = {}
+print( "Starting scraping..." )
+i = 1
 # Scrabing etilbudsavis.dk
 for searchWord, measurement in searchWords:
     items[searchWord] = {"topName": searchWord, "items": []}
@@ -72,6 +74,8 @@ for searchWord, measurement in searchWords:
             # db.insertItem(item) # Uncomment to insert into database
 
             items[searchWord]["items"].append(item)
+    print(f"Finished scraping {searchWord} \n({i}/{len(searchWords)}) \n\n")
+    i += 1
 
 def findCheapestItem(topWord: str):
     min = 10000000
