@@ -1,6 +1,7 @@
 import urllib.parse
 import re
-from dataclasses import dataclass
+from dtos import Item
+import databaseAccess as db
 
 import requests
 from bs4 import BeautifulSoup as BS
@@ -16,7 +17,7 @@ def getUrl(input: str):
     searchWord = urllib.parse.quote(input)
     return baseUrl + "/soeg/" + searchWord + query
 
-searchWords = ["skyr", "æg", "mælk"]
+searchWords = ["skyr", "æg", "mælk", "ærter"]
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
 
 def findDate(spans):
@@ -27,6 +28,7 @@ def findDate(spans):
         ret += spans[0].text + " til " + spans[3].text
     else:
         ret = "I dag til " + spans[3].text
+
     return ret
 
 def matchOn(text: str, match: str):
@@ -36,19 +38,12 @@ def matchOn(text: str, match: str):
     else:
         return False
 
-@dataclass
-class Item:
-    topName: str
-    name: str
-    price_per_unit: float
-    link: str
-    timeframe: str
-
 floatPattern = r"\d+,?\d*"
 items = {}
 for searchWord in searchWords:
     items[searchWord] = {"topName": searchWord, "items": []}
     response = requests.get(getUrl(searchWord))
+    print(getUrl(searchWord))
     soup = BS(response.content, "html.parser")
 
     headers = soup.find_all('header', string=lambda text: text is not None and matchOn(text, searchWord))
@@ -68,7 +63,7 @@ for searchWord in searchWords:
 
             # Store the item
             item = Item(searchWord, name, sanitizedPrice, baseUrl + link, timeframe)
-            #print(item)
+            # db.insertItem(item) # Uncomment to insert into database
 
             items[searchWord]["items"].append(item)
   
