@@ -1,4 +1,12 @@
 from dataclasses import dataclass
+import enum
+
+@dataclass
+class Plan(enum.Enum):
+    free = 1
+    fox = 2
+    wolf = 3
+    eagle = 4
 
 @dataclass
 class Item:
@@ -19,6 +27,8 @@ class User:
     password: str
     username: str
     location: str # coordinates
+    searchWords: list[str] #watchlist
+    plan: Plan
 
     def __str__(self):
         return f"{self.name} - {self.email} - {self.username}"
