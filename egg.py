@@ -2,13 +2,16 @@ import urllib.parse
 import re
 from dtos import Item
 import databaseAccess as db
+import smtplib
+from email.message import EmailMessage
 
 import requests
 from bs4 import BeautifulSoup as BS
 
-password = 'lydigtxjnucdxoda'
-email_sender = 'auto.python.alerter@gmail.com'
-email_receiver = 'lukas.madsen.brandt@gmail.com'
+password = 'zbzifkbdbcugjddo'
+email_sender = 'HealthHunterAuto@gmail.com'
+email_receivers = ['lukas.madsen.brandt@gmail.com','krelledegn@gmail.com','lukas.second.brandt@gmail.com']
+port = 587
 
 baseUrl= "https://etilbudsavis.dk"
 query = "?price_range.per_unit=piece&price_range.max=40&business_ids=bdf5A%2C0b1e8%2C71c90%2CDWZE1w%2Cc1edq%2Cd311fg%2C11deC%2C9ba51%2C93f13%2C88ddE%2C603dfL%2Cdi314B"
@@ -87,31 +90,33 @@ for searchWord, _ in searchWords:
 for cheapestItem in cheapestItems:
     print(cheapestItem)
 
-# subject = f"Æg på tilbud!"
-# body = "Her er ugens tilbud på æg: \n \n"
-# for item in items:
-#     # print the keys with the value in a new line
-#     body += "\n".join(f"{key}: {value}" for key, value in item.items())
-#     body += "\n \n"
-#
-# url = getUrl("æg")
-# body += f"Data trukket fra \"{url}\""
-# #print(subject)
-# print(body)
-# print(f"Mail sent to \"{email_receiver}\"")
-
-'''
-em = EmailMessage()
-em['From'] = email_sender
-em['to'] = email_receiver
-em['subject'] = subject
-em.set_content(body)
 
 
-context = ssl.create_default_context()
-with smtplib.SMTP_SSL('smtp.gmail.com',465, context=context) as smtp:
-    smtp.login(email_sender, password)
-    smtp.sendmail(email_sender, email_receiver, em.as_string())
+for email_receiver in email_receivers:
+    subject = "Her er de billigste varer på din Watchlist"
+    body = ""
+    for cheapestItem in cheapestItems:
+        body += str(cheapestItem) + "\n\n"
+
+    body += f"Data trukket fra \"{baseUrl}\""
+
+    print("PREPARING")
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['to'] = email_receiver
+    em['subject'] = subject
+    em.set_content(body)
 
 
-print("SENT")'''
+    print(em)
+
+
+    # Send the email
+    try:
+        with smtplib.SMTP('smtp.gmail.com', port, timeout=20) as smtp:
+            smtp.starttls()
+            smtp.login(email_sender, password)
+            smtp.sendmail(email_sender, email_receivers, em.as_string())
+            print("Email sent successfully")
+    except Exception as e:
+        print("Error:", e)
