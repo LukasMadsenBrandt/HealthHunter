@@ -8,10 +8,11 @@ from email.message import EmailMessage
 import requests
 from bs4 import BeautifulSoup as BS
 
+# Email configuration
 password = 'zbzifkbdbcugjddo'
 email_sender = 'HealthHunterAuto@gmail.com'
 email_receivers = ['lukas.madsen.brandt@gmail.com','krelledegn@gmail.com','lukas.second.brandt@gmail.com']
-port = 587
+port = 587 # TLS port
 
 baseUrl= "https://etilbudsavis.dk"
 filter = "?business_ids=bdf5A%2Ca5aaT%2Chg_y5Q%2C71c90%2C0b1e8%2CDWZE1w%2C9ba51%2C11deC%2Cd311fg%2Cc1edq%2C267e1m%2CdcbaNL%2C603dfL%2Cdi314B%2C88ddE%2C93f13"
@@ -20,13 +21,14 @@ def getUrl(input: str):
     searchWord = urllib.parse.quote(input)
     return baseUrl + "/soeg/" + searchWord + filter
 
+# Items in the watchlist
 searchWords = [("skyr", "pr. liter"), ("æg", "pr. styk"), ("mælk", "pr. liter"), ("ærter", "pr. kg"), ("kylling", "pr. kg"), ("omega-3", "pr. styk"), ("whey", "pr. kg")]
 
 days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag", "I morgen", "I dag"]
 
 def findDate(spans):
     ret = ""
-    # i only want the last 4 spans
+    # only want the last 4 spans, the 1 span and the 2 span is duplicated once
     spans = spans[-4:]
     if spans[0].text in days:
         ret += spans[0].text + " til " + spans[3].text
@@ -44,10 +46,10 @@ def matchOn(text: str, match: str):
 
 floatPattern = r"\d+,?\d*"
 items = {}
+# Scrabing etilbudsavis.dk
 for searchWord, measurement in searchWords:
     items[searchWord] = {"topName": searchWord, "items": []}
     response = requests.get(getUrl(searchWord))
-    print(getUrl(searchWord))
     soup = BS(response.content, "html.parser")
 
     headers = soup.find_all('header', string=lambda text: text is not None and matchOn(text, searchWord))
@@ -70,7 +72,7 @@ for searchWord, measurement in searchWords:
             # db.insertItem(item) # Uncomment to insert into database
 
             items[searchWord]["items"].append(item)
-  
+
 def findCheapestItem(topWord: str):
     min = 10000000
     cheapestItem = None
@@ -81,34 +83,28 @@ def findCheapestItem(topWord: str):
 
     return cheapestItem
 
+# Add all cheapest items to a list
 cheapestItems = []
 for searchWord, _ in searchWords:
     cheapestItem = findCheapestItem(searchWord)
     if cheapestItem:
         cheapestItems.append(cheapestItem)
-
-for cheapestItem in cheapestItems:
-    print(cheapestItem)
-
-
-
+        
+# Send the email to all receivers
 for email_receiver in email_receivers:
     subject = "Her er de billigste varer på din Watchlist"
     body = ""
+    # Add all the cheapest items to the body
     for cheapestItem in cheapestItems:
         body += str(cheapestItem) + "\n\n"
-
     body += f"Data trukket fra \"{baseUrl}\""
 
-    print("PREPARING")
+    # Create the email object
     em = EmailMessage()
     em['From'] = email_sender
     em['to'] = email_receiver
     em['subject'] = subject
     em.set_content(body)
-
-
-    print(em)
 
 
     # Send the email
@@ -117,6 +113,6 @@ for email_receiver in email_receivers:
             smtp.starttls()
             smtp.login(email_sender, password)
             smtp.sendmail(email_sender, email_receiver, em.as_string())
-            print("Email sent successfully")
+            print(f"Email sent to {email_receiver}")
     except Exception as e:
-        print("Error:", e)
+        print("Error: ", e)
